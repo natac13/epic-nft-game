@@ -12,7 +12,12 @@ const main = async () => {
     [100, 200, 300], // HP values
     [100, 50, 25], // Attack damage values
     [400, 100, 250], // strength values
-    [100, 300, 300] // dexterity values,
+    [100, 300, 300], // dexterity values,
+    'Diablow',
+    'https://i.imgur.com/llhkXn8.jpeg',
+    3000,
+    50,
+    5
   )
   await gameContract.deployed()
   console.log('Contract deployed to:', gameContract.address)
@@ -26,6 +31,15 @@ const main = async () => {
   // Get the value of the NFT's URI.
   const returnedTokenUri = await gameContract.tokenURI(1)
   console.log('Token URI:', returnedTokenUri)
+
+  txn = await gameContract.attackBoss()
+  await txn.wait()
+
+  txn = await gameContract.attackBoss()
+  await txn.wait()
+
+  txn = await gameContract.attackBoss()
+  await txn.wait()
 }
 
 const runMain = async () => {

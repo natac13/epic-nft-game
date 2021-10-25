@@ -17,27 +17,34 @@ const main = async () => {
     [100, 200, 300], // HP values
     [100, 50, 25], // Attack damage values
     [400, 100, 250], // strength values
-    [100, 300, 300] // dexterity values,
+    [100, 300, 300], // dexterity values,
+    'Diablow',
+    'https://i.imgur.com/llhkXn8.jpeg',
+    3000,
+    50,
+    5
   )
   await gameContract.deployed()
   console.log('Contract deployed to:', gameContract.address)
 
   let txn
-  txn = await gameContract.mintCharacterNFT(0)
-  await txn.wait()
-  console.log('Minted NFT #1')
-
-  txn = await gameContract.mintCharacterNFT(1)
-  await txn.wait()
-  console.log('Minted NFT #2')
-
+  // We only have three characters.
+  // an NFT w/ the character at index 2 of our array.
   txn = await gameContract.mintCharacterNFT(2)
   await txn.wait()
-  console.log('Minted NFT #3')
 
-  txn = await gameContract.mintCharacterNFT(3)
+  // Get the value of the NFT's URI.
+  const returnedTokenUri = await gameContract.tokenURI(1)
+  console.log('Token URI:', returnedTokenUri)
+
+  txn = await gameContract.attackBoss()
   await txn.wait()
-  console.log('Minted NFT #4')
+
+  txn = await gameContract.attackBoss()
+  await txn.wait()
+
+  txn = await gameContract.attackBoss()
+  await txn.wait()
 
   console.log('Done deploying and minting!')
 }

@@ -26,6 +26,15 @@ contract MyEpicGame is ERC721 {
     uint256 dexterity;
   }
 
+  struct BigBoss {
+    string name;
+    string imageURI;
+    uint256 hp;
+    uint256 maxHp;
+    uint256 attackDamage;
+    uint256 level;
+  }
+
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
@@ -34,13 +43,20 @@ contract MyEpicGame is ERC721 {
   mapping(uint256 => CharacterAttributes) public nftHolderAttributes;
   mapping(address => uint256) public nftHolders;
 
+  BigBoss public bigBoss;
+
   constructor(
     string[] memory characterNames,
     string[] memory characterImageURIs,
     uint256[] memory characterHp,
     uint256[] memory characterAttackDmg,
     uint256[] memory characterStrengths,
-    uint256[] memory characterDexterities
+    uint256[] memory characterDexterities,
+    string memory bigBossName,
+    string memory bigBossImageURI,
+    uint256 bossHp,
+    uint256 bossAttackDamage,
+    uint256 bossLevel
   ) ERC721('D2 LoD', 'DLOD') {
     for (uint256 i = 0; i < characterNames.length; i += 1) {
       defaultCharacters.push(
@@ -71,6 +87,16 @@ contract MyEpicGame is ERC721 {
 
     // set tokenId equal to 1 at the start
     _tokenIds.increment();
+
+    // Initialize the boss. Save it to our global "bigBoss" state variable.
+    bigBoss = BigBoss({
+      name: bigBossName,
+      imageURI: bigBossImageURI,
+      hp: bossHp,
+      maxHp: bossHp,
+      attackDamage: bossAttackDamage,
+      level: bossLevel
+    });
   }
 
   function mintCharacterNFT(uint256 _characterIndex) external {
@@ -153,5 +179,49 @@ contract MyEpicGame is ERC721 {
     );
 
     return output;
+  }
+
+  function attackBoss() public {
+    // Get the state of the player's NFT.
+    uint256 nftTokenIdOfPlayer = nftHolders[msg.sender];
+    CharacterAttributes storage player = nftHolderAttributes[
+      nftTokenIdOfPlayer
+    ];
+
+    console.log(
+      '\nPlayer w/ character %s about to attack. Has %s HP and %s AD',
+      player.name,
+      player.hp,
+      player.attackDamage
+    );
+    console.log(
+      'Boss %s has %s HP and %s AD',
+      bigBoss.name,
+      bigBoss.hp,
+      bigBoss.attackDamage
+    );
+
+    // Make sure the player has more than 0 HP.
+    require(player.hp > 0, 'Error: character must have HP to attack boss.');
+
+    // Make sure the boss has more than 0 HP.
+    require(bigBoss.hp > 0, 'Error: boss must have HP to attack boss.');
+
+    // Allow player to attack boss.
+    if (bigBoss.hp < player.attackDamage) {
+      bigBoss.hp = 0;
+    } else {
+      bigBoss.hp = bigBoss.hp - player.attackDamage;
+    }
+
+    // Allow boss to attack player.
+    if (player.hp < bigBoss.attackDamage) {
+      player.hp = 0;
+    } else {
+      player.hp = player.hp - bigBoss.attackDamage;
+    }
+
+    // Console for ease.
+    console.log('Boss attacked player. New player hp: %s\n', player.hp);
   }
 }
