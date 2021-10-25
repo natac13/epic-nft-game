@@ -6,24 +6,40 @@
 import hre from 'hardhat'
 
 const main = async () => {
-  const nftContractFactory = await hre.ethers.getContractFactory('MyEpicNFT')
-  const nftContract = await nftContractFactory.deploy(100)
-  await nftContract.deployed()
-  console.log('Contract deployed to:', nftContract.address)
+  const gameContractFactory = await hre.ethers.getContractFactory('MyEpicGame')
+  const gameContract = await gameContractFactory.deploy(
+    ['Barbarian', 'Sorceress', 'Paladin'], // Names
+    [
+      'https://i.imgur.com/NPcuXhA.jpeg',
+      'https://i.imgur.com/3n2DCC7.jpeg',
+      'https://i.imgur.com/88paaIX.jpeg',
+    ],
+    [100, 200, 300], // HP values
+    [100, 50, 25], // Attack damage values
+    [400, 100, 250], // strength values
+    [100, 300, 300] // dexterity values,
+  )
+  await gameContract.deployed()
+  console.log('Contract deployed to:', gameContract.address)
 
-  // Call the function.
-  const txn = await nftContract.makeAnEpicNFT()
-  // Wait for it to be mined.
+  let txn
+  txn = await gameContract.mintCharacterNFT(0)
   await txn.wait()
   console.log('Minted NFT #1')
 
-  const totalSupply = await nftContract.getTotalNFTsMined()
-  console.log(`Total Supply: ${totalSupply?.toNumber()}`)
+  txn = await gameContract.mintCharacterNFT(1)
+  await txn.wait()
+  console.log('Minted NFT #2')
 
-  // txn = await nftContract.makeAnEpicNFT()
-  // // Wait for it to be mined.
-  // await txn.wait()
-  // console.log('Minted NFT #2')
+  txn = await gameContract.mintCharacterNFT(2)
+  await txn.wait()
+  console.log('Minted NFT #3')
+
+  txn = await gameContract.mintCharacterNFT(3)
+  await txn.wait()
+  console.log('Minted NFT #4')
+
+  console.log('Done deploying and minting!')
 }
 
 const runMain = async () => {
