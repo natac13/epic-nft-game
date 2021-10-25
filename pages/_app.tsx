@@ -32,7 +32,6 @@ export default function MyApp(props: MyAppProps) {
         <CssBaseline />
         <Box>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <Navbar />
           <Component {...pageProps} />
           <Box sx={{ mt: 6 }} />
           <Box

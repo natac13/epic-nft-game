@@ -9,6 +9,7 @@ import {
 import Button from '@mui/material/Button'
 import * as React from 'react'
 import { ethers } from 'ethers'
+import Layout from '../src/Layout'
 
 const CONTRACT_ADDRESS = ''
 
@@ -126,7 +127,7 @@ export default function Index() {
   }, [])
 
   return (
-    <Container maxWidth="md">
+    <Layout account={currentAccount}>
       <Box
         component="header"
         sx={{
@@ -140,14 +141,6 @@ export default function Index() {
         <Typography variant="h1" align="center" fontWeight="700">
           Epic Nft Game
         </Typography>
-        {currentAccount && (
-          <Box mt={3} display="flex" alignItems="center">
-            <Typography variant="h6" sx={{ mr: 1 }}>
-              Connected Account:
-            </Typography>
-            <Typography variant="subtitle1">{currentAccount}</Typography>
-          </Box>
-        )}
       </Box>
       <Box
         sx={{
@@ -208,6 +201,6 @@ export default function Index() {
           <CircularProgress color="secondary" size={50} />
         </Box>
       )}
-    </Container>
+    </Layout>
   )
 }

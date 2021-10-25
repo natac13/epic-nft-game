@@ -5,25 +5,37 @@ import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import Link from './Link'
 
-export interface NavbarProps {}
+export interface NavbarProps {
+  account?: string
+}
 
 const Navbar: React.FC<NavbarProps> = (props) => {
-  const {} = props
+  const { account } = props
 
   return (
     <AppBar position="static">
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Typography variant="h5" component="div" align="center">Epic NFTs</Typography>
+        <Typography
+          variant="h5"
+          component="div"
+          align="center"
+          sx={{ flex: '1 0', display: 'flex', justifyContent: 'flex-start' }}
+        >
+          Epic NFTs
+        </Typography>
         <Box
           sx={{
             flex: '1 0',
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'center',
           }}
         >
           <Link href="/" underline="none">
             Home
           </Link>
+        </Box>
+        <Box flex="1 0" display="flex" justifyContent="flex-end">
+          {account ?? '0x0...'}
         </Box>
       </Toolbar>
     </AppBar>
