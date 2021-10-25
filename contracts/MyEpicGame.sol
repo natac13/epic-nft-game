@@ -45,6 +45,13 @@ contract MyEpicGame is ERC721 {
 
   BigBoss public bigBoss;
 
+  event CharacterNFTMinted(
+    address sender,
+    uint256 tokenId,
+    uint256 characterIndex
+  );
+  event AttackComplted(uint256 newBossHp, uint256 newPlayerHp);
+
   constructor(
     string[] memory characterNames,
     string[] memory characterImageURIs,
@@ -127,6 +134,8 @@ contract MyEpicGame is ERC721 {
 
     // Increment the tokenId for the next person that uses it.
     _tokenIds.increment();
+
+    emit CharacterNFTMinted(msg.sender, newItemId, _characterIndex);
   }
 
   function tokenURI(uint256 _tokenId)
@@ -208,20 +217,59 @@ contract MyEpicGame is ERC721 {
     require(bigBoss.hp > 0, 'Error: boss must have HP to attack boss.');
 
     // Allow player to attack boss.
-    if (bigBoss.hp < player.attackDamage) {
+    if (
+      bigBoss.hp <
+      player.attackDamage + ((player.strength * player.dexterity) % 99)
+    ) {
       bigBoss.hp = 0;
     } else {
-      bigBoss.hp = bigBoss.hp - player.attackDamage;
+      bigBoss.hp =
+        bigBoss.hp -
+        player.attackDamage -
+        ((player.strength * player.dexterity) % 99);
     }
 
     // Allow boss to attack player.
-    if (player.hp < bigBoss.attackDamage) {
+    if (
+      player.hp <
+      bigBoss.attackDamage - ((player.strength * player.dexterity) % 99)
+    ) {
       player.hp = 0;
     } else {
-      player.hp = player.hp - bigBoss.attackDamage;
+      player.hp =
+        player.hp -
+        bigBoss.attackDamage +
+        ((player.strength * player.dexterity) % 99);
     }
 
     // Console for ease.
     console.log('Boss attacked player. New player hp: %s\n', player.hp);
+  }
+
+  function checkIfUserHasNFT()
+    public
+    view
+    returns (CharacterAttributes memory)
+  {
+    uint256 userNftTokenId = nftHolders[msg.sender];
+
+    if (userNftTokenId > 0) {
+      return nftHolderAttributes[userNftTokenId];
+    } else {
+      CharacterAttributes memory emptyStruct;
+      return emptyStruct;
+    }
+  }
+
+  function getAllDefaultCharacters()
+    public
+    view
+    returns (CharacterAttributes[] memory)
+  {
+    return defaultCharacters;
+  }
+
+  function getBigBoss() public view returns (BigBoss memory) {
+    return bigBoss;
   }
 }
