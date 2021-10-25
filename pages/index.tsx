@@ -10,8 +10,13 @@ import Button from '@mui/material/Button'
 import * as React from 'react'
 import { ethers } from 'ethers'
 import Layout from '../src/Layout'
-
-const CONTRACT_ADDRESS = ''
+import SelectCharacter from '../src/SelectCharacter'
+import {
+  CONTRACT_ABI,
+  CONTRACT_ADDRESS,
+  transformCharacterData,
+} from '../src/constants'
+import { MyEpicGame } from '../typechain'
 
 const createOpenSeaLink = (
   contractAddress: string,
@@ -30,6 +35,7 @@ const createRaribleLink = (
 export default function Index() {
   const [currentAccount, setCurrentAccount] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [characterNFT, setCharacterNFT] = React.useState(null)
 
   const checkCorrectBlockchain = async () => {
     const { ethereum } = window
@@ -122,9 +128,36 @@ export default function Index() {
     }
   }
 
+  const fetchNFTMetadata = async () => {
+    // try {
+    const provider = new ethers.providers.Web3Provider(window?.ethereum)
+    const signer = provider.getSigner()
+    const gameContract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      CONTRACT_ABI,
+      signer
+    ) as MyEpicGame
+
+    const tx = await gameContract.checkIfUserHasNFT({ gasLimit: 800000 })
+    console.log({ tx })
+    if (tx.name) {
+      console.log('User has NFT')
+      setCharacterNFT(transformCharacterData(tx))
+    }
+    // } catch (err) {
+    //   console.log({ err })
+    // }
+  }
+
   React.useEffect(() => {
     checkCorrectBlockchain()?.then(checkIfWalletIsConnected)
   }, [])
+
+  React.useEffect(() => {
+    if (currentAccount) {
+      fetchNFTMetadata()
+    }
+  }, [currentAccount])
 
   return (
     <Layout account={currentAccount}>
@@ -152,28 +185,12 @@ export default function Index() {
           gap: 2,
         }}
       >
-        {/* <Grow in={!!currentAccount}>
-          <Box display="flex" flexDirection="column" gap={3}>
-            <Button variant="contained" color="primary" onClick={getMinedCount}>
-              Get Mined NFT Count
-            </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              target="_blank"
-              href="https://testnets.opensea.io/collection/squarenft-xmductv7w7"
-            >
-              View Collection
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={askContractToMintNft}
-            >
-              Mint NFT
-            </Button>
-          </Box>
-        </Grow> */}
+        {!!currentAccount && !characterNFT && (
+          <SelectCharacter
+            setCharacterNFT={setCharacterNFT}
+            setLoading={setLoading}
+          />
+        )}
         <Grow in={!currentAccount}>
           <Button
             color="primary"
