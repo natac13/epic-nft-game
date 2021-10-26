@@ -17,6 +17,7 @@ import {
   transformCharacterData,
 } from '../src/constants'
 import { MyEpicGame } from '../typechain'
+import Arena from '../src/Arena'
 
 const createOpenSeaLink = (
   contractAddress: string,
@@ -150,7 +151,10 @@ export default function Index() {
   }
 
   React.useEffect(() => {
-    checkCorrectBlockchain()?.then(checkIfWalletIsConnected)
+    setLoading(true)
+    checkCorrectBlockchain()
+      ?.then(checkIfWalletIsConnected)
+      ?.then(() => setLoading(false))
   }, [])
 
   React.useEffect(() => {
@@ -175,33 +179,6 @@ export default function Index() {
           Epic Nft Game
         </Typography>
       </Box>
-      <Box
-        sx={{
-          my: 3,
-          display: 'flex',
-          width: '100%',
-          justifyContent: 'center',
-          flexFlow: 'column',
-          gap: 2,
-        }}
-      >
-        {!!currentAccount && !characterNFT && (
-          <SelectCharacter
-            setCharacterNFT={setCharacterNFT}
-            setLoading={setLoading}
-          />
-        )}
-        <Grow in={!currentAccount}>
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={connectWallet}
-            disabled={loading}
-          >
-            Connect Wallet
-          </Button>
-        </Grow>
-      </Box>
       {loading && (
         <Box
           sx={{
@@ -218,6 +195,39 @@ export default function Index() {
           <CircularProgress color="secondary" size={50} />
         </Box>
       )}
+      <Box
+        sx={{
+          my: 3,
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'center',
+          flexFlow: 'column',
+          gap: 2,
+        }}
+      >
+        {!!currentAccount && !characterNFT ? (
+          <SelectCharacter
+            setCharacterNFT={setCharacterNFT}
+            setLoading={setLoading}
+          />
+        ) : (
+          <Arena
+            setCharacterNFT={setCharacterNFT}
+            setLoading={setLoading}
+            characterNFT={characterNFT}
+          />
+        )}
+        <Grow in={!currentAccount}>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={connectWallet}
+            disabled={loading}
+          >
+            Connect Wallet
+          </Button>
+        </Grow>
+      </Box>
     </Layout>
   )
 }

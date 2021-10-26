@@ -26,3 +26,4 @@ typechain
 #Hardhat files
 cache
 artifacts
+!artifacts/contracts/MyEpicGame.sol/MyEpicGame.json

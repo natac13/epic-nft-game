@@ -50,7 +50,7 @@ contract MyEpicGame is ERC721 {
     uint256 tokenId,
     uint256 characterIndex
   );
-  event AttackComplted(uint256 newBossHp, uint256 newPlayerHp);
+  event AttackComplete(uint256 newBossHp, uint256 newPlayerHp);
 
   constructor(
     string[] memory characterNames,
@@ -244,6 +244,7 @@ contract MyEpicGame is ERC721 {
 
     // Console for ease.
     console.log('Boss attacked player. New player hp: %s\n', player.hp);
+    emit AttackComplete(bigBoss.hp, player.hp);
   }
 
   function checkIfUserHasNFT()
