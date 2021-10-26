@@ -1,4 +1,5 @@
-import { abi } from '../artifacts/contracts/MyEpicGame.sol/MyEpicGame.json'
+// import { abi } from '../artifacts/contracts/MyEpicGame.sol/MyEpicGame.json'
+import { abi } from './utils/ABI.json'
 
 export const transformCharacterData = (characterData) => {
   return {
